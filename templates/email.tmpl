@@ -1,0 +1,114 @@
+{{define "styles"}}
+    <style>
+#header, #footer {
+    padding: 10px;
+    background-color: #fafafa;
+}
+
+hr {
+    margin: 0;
+}
+
+#content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#content iframe {
+    flex: 1;
+    border: none;
+}
+
+#content hr {
+    border-top: 1px solid #ccc;
+    border-bottom: none;
+    background-color: #ccc;
+}
+
+#footer-content {
+    display: flex;
+    flex-direction: row;
+}
+
+#footer-content > div {
+    flex: 1;
+}
+
+#footer-content ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#nav-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.spacer {
+    flex: 1;
+}
+    </style>
+{{end}}
+{{define "title"}}{{.Msg.GetHeader "Subject"}}{{end}}
+{{define "description"}}{{.Msg.GetHeader "Subject"}}{{end}}
+{{define "header"}}
+    <div id="header">
+        <div><strong>Subject: {{.Msg.GetHeader "Subject"}}</strong></div>
+        <div><strong>Date:</strong> {{.Msg.GetHeader "Date"}}</div>
+        <div><strong>From:</strong> {{.Msg.GetHeader "From"}}</div>
+        {{if .Msg.GetHeader "To"}}<div><strong>To:</strong> {{.Msg.GetHeader "To"}}</div>{{end}}
+        {{if .Msg.GetHeader "CC"}}<div><strong>CC:</strong> {{.Msg.GetHeader "CC"}}</div>{{end}}
+        {{if .Msg.GetHeader "BCC"}}<div><strong>BCC:</strong> {{.Msg.GetHeader "BCC"}}</div>{{end}}
+    </div>
+{{end}}
+{{define "body"}}
+    <hr />
+    <div id="content">
+        {{range $idx, $c := .HTMLContent}}
+            {{if ne $idx 0}}<hr />{{end}}
+            <iframe src="content/{{$c}}"></iframe>
+        {{else}}
+            {{range $idx, $c := .TextContent}}
+                {{if ne $idx 0}}<hr />{{end}}
+                <iframe src="content/{{$c}}"></iframe>
+            {{else}}
+                <div>No content found</div>
+            {{end}}
+        {{end}}
+    </div>
+    <hr />
+{{end}}
+{{define "footer"}}
+    <div id="footer">
+        <div id="footer-content">
+            <div id="nav-wrapper">
+                <a href="{{.Name}}" target="_blank">Original Message</a>
+                    <div class="spacer"></div>
+                    {{template "meta" .}}
+            </div>
+            <div>
+                <strong>Content:</strong>
+                <ul>
+                    {{range .HTMLContent}}
+                        <li><a href="content/{{.}}">{{.}}</a></li>
+                    {{end}}
+                    {{range .TextContent}}
+                        <li><a href="content/{{.}}">{{.}}</a></li>
+                    {{end}}
+                </ul>
+            </div>
+            {{if .Attachments}}
+                <div>
+                    <strong>Attachments:</strong>
+                    <ul>
+                        {{range .Attachments}}
+                            <li><a href="attachments/{{.Link}}">{{.Name}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+            {{end}}
+        </div>
+    </div>
+{{end}}
