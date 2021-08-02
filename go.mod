@@ -1,4 +1,4 @@
-module github.com/korylprince/go-email-parser
+module github.com/korylprince/eml2html
 
 go 1.16
 
