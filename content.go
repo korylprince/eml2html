@@ -1,4 +1,4 @@
-package html
+package eml2html
 
 import (
 	"strings"
