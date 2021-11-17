@@ -2,13 +2,25 @@
 
 # About
 
-`eml2html` is a library used to transform RFC 822 (eml) files into html files viewable in a browser.
+`eml2html` is a library and command line tool used to transform RFC 822 (eml) files into html files viewable in a browser.
 
 
 # Installing
 
-Using Go Modules:
+Library, using Go Modules:
 
 `go get github.com/korylprince/eml2html`
+
+
+CLI Tool:
+
+``` bash
+mkdir build
+cd build
+go mod init build
+go get github.com/korylprince/eml2html/cmd/eml2html@<version>
+go build github.com/korylprince/eml2html/cmd/eml2html
+./eml2html -h
+```
 
 If you have any issues or questions [create an issue](https://github.com/korylprince/eml2html/issues).
