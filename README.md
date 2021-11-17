@@ -18,7 +18,7 @@ CLI Tool:
 mkdir build
 cd build
 go mod init build
-go get github.com/korylprince/eml2html/cmd/eml2html@<version>
+go get -d github.com/korylprince/eml2html/cmd/eml2html@<version>
 go build github.com/korylprince/eml2html/cmd/eml2html
 ./eml2html -h
 ```
