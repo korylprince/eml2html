@@ -15,6 +15,7 @@ import (
 	"github.com/jhillyerd/enmime"
 	"github.com/k3a/html2text"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 const modeFile = 0644
@@ -132,7 +133,7 @@ func writeAttachments(root string, msg *enmime.Envelope) (attachments []*attachm
 	return attachments, contentIDMap, nil
 }
 
-func linkContent(contentIDMap map[string]string, b []byte) ([]byte, error) {
+func rewriteHTML(contentIDMap map[string]string, b []byte) ([]byte, error) {
 	r := bytes.NewReader(b)
 	doc, err := html.Parse(r)
 	if err != nil {
@@ -140,6 +141,24 @@ func linkContent(contentIDMap map[string]string, b []byte) ([]byte, error) {
 	}
 	var f func(*html.Node)
 	f = func(n *html.Node) {
+		// rewrite charset to utf-8
+		if n.DataAtom == atom.Meta {
+			for _, attr := range n.Attr {
+				if strings.ToLower(attr.Key) == "http-equiv" && strings.ToLower(attr.Val) == "content-type" {
+					n.Attr = []html.Attribute{
+						{Key: "http-equiv", Val: "Content-Type"},
+						{Key: "content", Val: "text/html; charset=utf-8"},
+					}
+				}
+				if strings.ToLower(attr.Key) == "charset" {
+					n.Attr = []html.Attribute{
+						{Key: "charset", Val: "utf-8"},
+					}
+				}
+			}
+		}
+
+		// rewrite links using content map
 		for idx, a := range n.Attr {
 			if strings.ToLower(a.Key) == "src" && strings.HasPrefix(a.Val, "cid:") {
 				id := strings.TrimPrefix(a.Val, "cid:")
@@ -203,7 +222,7 @@ func writeContent(root, name string, msg *enmime.Envelope, contentIDMap map[stri
 	}
 
 	for i, b := range cleanHC {
-		h, err := linkContent(contentIDMap, b)
+		h, err := rewriteHTML(contentIDMap, b)
 		if err != nil {
 			h = b
 		}
